@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CryptoPunks</title>
+  <style>
+    #canvas {
+      display: none;
+    }
+    #box {
+      width: 384px;
+      height: 384px;
+      border: 1px solid #000000;
+      background: #638596;
+      margin: 50px auto;
+    }
+    .operate {
+      margin-top: 50px;
+      text-align: center;
+    }
+    .group {
+      display: flex;
+    }
+    .item {
+      width: 16px;
+      height: 16px;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas" width="2400" height="2400"></canvas>
+  <div class="operate">
+    <span>No.</span>
+    <input id="input"></input>
+    <button id="render">render</button>
+    <button id="random">random</button>
+    <button id="automatic">automatic</button>
+  </div>
+  <div id="box"></div>
+  <script>
+  const canvas = document.getElementById('canvas');
+  const context = canvas.getContext('2d');
+
+  const image = new Image();
+  image.src = 'assets/punks.png';
+
+  image.onload = function() {
+    context.drawImage(image, 0, 0, this.width, this.height);
+  }
+
+  document.getElementById('render').addEventListener('click', function() {
+    const value = document.getElementById('input').value;
+    renderPunk(Number(value));
+  })
+
+  document.getElementById('random').addEventListener('click', function() {
+    const value = Math.floor(Math.random() * 10000);
+    document.getElementById('input').value = value;
+    renderPunk(value);
+  })
+
+
+
+  document.getElementById('automatic').addEventListener('click', function() {
+    if (this.innerText === 'automatic') {
+      this.innerText = 'stop';
+      this.timer = setInterval(() => {
+        const value = Math.floor(Math.random() * 10000);
+        document.getElementById('input').value = value;
+        renderPunk(value);
+      }, 500);
+    } else {
+      this.innerText = 'automatic';
+      clearInterval(this.timer);
+    }
+  })
+
+  function renderPunk(num) {
+    const x = (num % 100) * 24
+    const y = Math.floor(num / 100) * 24
+    const imageData = context.getImageData(x, y, 24, 24).data;
+    const getResult = getData(imageData);
+    render(getResult);
+  }
+
+  function render(data) {
+    const box = document.getElementById('box');
+    box.innerHTML = '';
+    data.forEach((item) => {
+      let row = document.createElement("div");
+      row.className = 'group';
+      item.forEach((_item) => {
+        let col = document.createElement("div");
+        col.className = 'item';
+        col.style.backgroundColor = `rgba(${_item[0]}, ${_item[1]}, ${_item[2]}, ${_item[3]})`;
+        row.appendChild(col);
+      })
+      box.appendChild(row);
+    })
+  }
+
+  function getData(arr) {
+    return arrTransform(24, arrTransform(4, arr));
+  }
+
+  function arrTransform(num, arr) {
+    const list = [];
+    arr.forEach((item, index) => {
+      const page = Math.floor(index / num);
+      if (!list[page]) {
+        list[page] = [];
+      }
+      list[page].push(item);
+    });
+    return list;
+  }
+  </script>
+</body>
+</html>
