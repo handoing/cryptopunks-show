@@ -2,6 +2,8 @@
 
 Random display of punks.
 
+You can see which punks are still available along with some more general information over at [https://www.larvalabs.com/cryptopunks](https://www.larvalabs.com/cryptopunks).
+
 ![](./assets/image-1.png)
 
 ## Start
